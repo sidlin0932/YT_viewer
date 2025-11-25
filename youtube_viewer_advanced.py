@@ -273,6 +273,54 @@ class AdvancedYoutubeViewer:
             schedule.every(minutes).minutes.do(self.view_all_videos)
             print(f"✓ 已設定每 {minutes} 分鐘執行一次")
     
+    def run_loop(self, times=1, interval_minutes=0):
+        """執行指定次數的循環
+        
+        參數:
+            times: 執行次數（預設1次）
+            interval_minutes: 每次執行之間的等待時間（分鐘，預設0）
+        """
+        print(f"\n{'='*60}")
+        print("進階 YouTube 影片瀏覽器 - 循環模式")
+        print(f"{'='*60}")
+        print(f"目前時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"影片數量: {len(self.video_urls)}")
+        print(f"代理數量: {len(self.proxies)}")
+        print(f"執行次數: {times}")
+        print(f"間隔時間: {interval_minutes} 分鐘")
+        print(f"觀看時長: {self.watch_duration}秒")
+        print(f"\n{'='*60}\n")
+        
+        try:
+            for i in range(times):
+                print(f"\n{'🔄'*30}")
+                print(f"第 {i+1}/{times} 次執行")
+                print(f"{'🔄'*30}\n")
+                
+                # 執行觀看
+                self.view_all_videos()
+                
+                # 如果不是最後一次，等待指定時間
+                if i < times - 1 and interval_minutes > 0:
+                    wait_seconds = interval_minutes * 60
+                    print(f"\n⏳ 等待 {interval_minutes} 分鐘後繼續...")
+                    print(f"下次執行時間: {datetime.now().strftime('%H:%M:%S')}")
+                    
+                    # 顯示倒數計時
+                    for remaining in range(wait_seconds, 0, -60):
+                        mins = remaining // 60
+                        print(f"  剩餘 {mins} 分鐘...", end='\r')
+                        time.sleep(60)
+                    print()  # 換行
+            
+            print(f"\n{'='*60}")
+            print(f"✅ 所有循環已完成！")
+            print(f"總共執行: {times} 次")
+            print(f"{'='*60}\n")
+            
+        except KeyboardInterrupt:
+            print(f"\n\n⚠️ 程式已被中斷（已完成 {i} 次）")
+    
     def run(self):
         """開始執行排程"""
         print(f"\n{'='*60}")
@@ -307,7 +355,7 @@ def main():
     
     # 1. 基本設定
     viewer.watch_duration = 60  # 每次觀看秒數（建議30-120秒）
-    viewer.headless = True      # ⭐ 雲端部署必須設為 True
+    viewer.headless = False     # False=顯示瀏覽器, True=背景執行
     
     # 2. 新增影片URL
     viewer.add_video("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
@@ -322,26 +370,4 @@ def main():
     # 方式B: 從檔案載入代理列表
     # viewer.load_proxies_from_file("proxies.txt")
     
-    # 方式C: 不使用代理（使用本機IP）
-    # （什麼都不設定即可）
-    
-    # 4. 設定排程
-    
-    # 每日固定時間
-    viewer.schedule_daily("14:30")
-    
-    # 或固定間隔
-    # viewer.schedule_interval(hours=3)
-    # viewer.schedule_interval(minutes=30)
-    
-    # 5. 立即測試（取消註解）
-    # viewer.view_all_videos()
-    
-    # ================================================
-    
-    # 啟動排程
-    viewer.run()
 
-
-if __name__ == "__main__":
-    main()

@@ -1,0 +1,5 @@
+proxies.txt
+__pycache__/
+*.exe
+*.env
+*.log
